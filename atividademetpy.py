@@ -18,6 +18,8 @@ from metpy.units import units
 import numpy as np
 import xarray as xr
 import pandas as pd
+import cartopy.mpl.ticker as cticker
+from cartopy.util import add_cyclic_point
 #%%
 # abrindo os dados do netcdf 24062021.nc chamando de ds. Contem dados de temperatura, v wind e u wind para hemisferio sul no dia 24 de 11 de 2021 (09z). 
 ds = xr.open_dataset('24062021.nc')#.metpy.parse_cf()
@@ -50,8 +52,6 @@ dst=ds['t']
 #visualizando temperatura
 dst
 #%%
-temp = getvar(dst, "t")
-#%%
 print(dst.shape)
 print(dsu.shape)
 print(dsv.shape)
@@ -61,13 +61,8 @@ dst2=np.array(dst)
 #%%
 dst2.shape
 #%%
-dst3=np.squeeze(dst2).shape
-#%%
-dst3=dst2[0,:,:]
-print(dst3.shape)
-#%%
 np.info(dst2)
-#%%
+#%% nao rodar
 # Compute grid spacings for data
 dx, dy = mpcalc.lat_lon_grid_deltas(ds['longitude'], ds['latitude'])
 dx1, dy1 = mpcalc.lat_lon_grid_deltas(ds1['longitude'], ds1['latitude'])
@@ -80,18 +75,18 @@ dx2, dy2 = mpcalc.lat_lon_grid_deltas(ds2['longitude'], ds2['latitude'])
 qvector = mpcalc.q_vector(dsu*units('m/s'),dsv*units('m/s'),dst*units('K'),850*units('hPa'),11.1*units.km,11.1*units.km)
 #%%
 qvector
-#%%
+#%% don't run
 m='meter ** 2 / kilogram / second'
 #%%
 q_vector_u=qvector[0]
 q_vector_v=qvector[1]
 #%%
 q_vector_u
-#%%
+#%% transformando em dataset para calcular media (improviso)
 q_vector_u_dset=q_vector_u.to_dataset(name="vector-q-u")
 #%%
 q_vector_u_dset
-#%%
+#%% calculando media 
 qu_mean=q_vector_u_dset['vector-q-u'].mean(('time','longitude','latitude'))
 qu_mean
 #%%
@@ -102,43 +97,51 @@ qv_mean
 #%%
 q_vector_v
 
-#%%
+#%% obtendo o crs
 dat=ds.metpy.parse_cf('t')
-#%%
+#%% obtendo a projecao 
 proj=dat.metpy.cartopy_crs
 #%%
 
-#%%
+#%% nao rodar - de versao antiga
 #rs=ccrs.LambertConformal(central_longitude=-53,central_latitude=45)
 crs=ccrs.LambertCylindrical()
 data_crs=ccrs.LambertCylindrical()
-#%%
+#%% nao rodar - de versao antiga
 #lons, lats = np.meshgrid(ds['longitude'], ds['latitude'])
 lons=dst['longitude'] 
 lats=dst['latitude']
-#%%
+#%% selecionando um unico dia para tornar array em 2D
 q_vector_u_sel=q_vector_u.sel(time='2021-06-24T09:00:00')
 q_vector_u
-#%%
+#%% selecionando um unico dia para tornar array em 2D
 q_vector_v_sel=q_vector_v.sel(time='2021-06-24T09:00:00')
 q_vector_v_sel
 #%%
 plt.contourf(dssel['t'],cmap='coolwarm')
 plt.colorbar()
-#%%
+#%% mapa do campo de temperatura 
 plt.figure(figsize=(12,9))
 ax = plt.axes(projection=proj)
 ax.coastlines()
-            
-#ax.set_extent([-90,-30,10,-89])
-#ax.coastlines #(resolution='110m')
-#ax.add_feature(cfeature.BORDERS)
-ax.contourf(dssel['longitude'],dssel['latitude'],dssel['t'],cmap='coolwarm')
+ax.set_extent([-90,-30,0,-90])            
+cf=ax.contourf(dssel['longitude'],dssel['latitude'],dssel['t'],cmap='coolwarm')
 
-#ax.quiver(dsu,dsv,q_vector_u,q_vector_v)
-#ax.clabel(c,inline=True,fontsize=10)
-#plt.colorbar(c,shrink=0.6)
-plt.show()  
+# Define the xticks for longitude
+ax.set_xticks(np.arange(-90,-30,10), crs=proj)
+lon_formatter = cticker.LongitudeFormatter()
+ax.xaxis.set_major_formatter(lon_formatter)
+
+# Define the yticks for latitude
+ax.set_yticks(np.arange(-90,0,10), crs=proj)
+lat_formatter = cticker.LatitudeFormatter()
+ax.yaxis.set_major_formatter(lat_formatter)
+cb=plt.colorbar(cf)#, shrink=0.5)
+cb.ax.set_title('K')#°C
+#cb.ax.set_title('mmol m$^{-3}$')
+ax.set_title('Temperatura em 2021-06-24T09:00:00')
+plt.show() 
+
 #%%
 plt.contour(q_vector_u_sel)
 plt.colorbar()
