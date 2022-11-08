@@ -145,18 +145,51 @@ plt.show()
 #%%
 plt.contour(q_vector_u_sel)
 plt.colorbar()
-#%%
+plt.show() #se por o plt show ele nao sobrepoem as figuras
+plt.contour(q_vector_v_sel)
+plt.colorbar()
+plt.show()  
+plt.contour(q_vector_u_sel)
+plt.colorbar()
+plt.show() 
+#%% vector q plot
 plt.figure(figsize=(12,9))
 ax = plt.axes(projection=proj)
 ax.coastlines()
-            
-#ax.set_extent([-90,-30,10,-89])
-#ax.coastlines #(resolution='110m')
-#ax.add_feature(cfeature.BORDERS)
-#ax.contourf(dx,dy,dst,transfo,colors='k',linewidths=1)
-ax.quiver(q_vector_u_sel['longitude'],q_vector_u_sel['latitude'],q_vector_u_sel,q_vector_v_sel,scale=1e-13)
-#ax.clabel(c,inline=True,fontsize=10)
-#plt.colorbar(c,shrink=0.6)
+ax.set_extent([-90,-30,0,-90]) 
+cf=ax.quiver(dssel['longitude'],dssel['latitude'],q_vector_u_sel,q_vector_v_sel,scale=40e-10)           
+#cf=ax.contourf(dssel['longitude'],dssel['latitude'],dssel['t'],cmap='coolwarm')
+
+# Define the xticks for longitude
+ax.set_xticks(np.arange(-90,-30,10), crs=proj)
+lon_formatter = cticker.LongitudeFormatter()
+ax.xaxis.set_major_formatter(lon_formatter)
+
+# Define the yticks for latitude
+ax.set_yticks(np.arange(-90,0,10), crs=proj)
+lat_formatter = cticker.LatitudeFormatter()
+ax.yaxis.set_major_formatter(lat_formatter)
+
+plt.show() 
+
+#%% vector q plot
+plt.figure(figsize=(12,9))
+ax = plt.axes(projection=proj)
+ax.coastlines()
+ax.set_extent([-70,-50,-20,-40]) 
+cf=ax.quiver(dssel['longitude'],dssel['latitude'],q_vector_u_sel,q_vector_v_sel,scale=40e-10)           
+#cf=ax.contourf(dssel['longitude'],dssel['latitude'],dssel['t'],cmap='coolwarm')
+
+# Define the xticks for longitude
+ax.set_xticks(np.arange(-70,-50,5), crs=proj)
+lon_formatter = cticker.LongitudeFormatter()
+ax.xaxis.set_major_formatter(lon_formatter)
+
+# Define the yticks for latitude
+ax.set_yticks(np.arange(-40,-20,5), crs=proj)
+lat_formatter = cticker.LatitudeFormatter()
+ax.yaxis.set_major_formatter(lat_formatter)
+
 plt.show()  
 #%%
 fig=plt.figure(figsize=(12,9))
