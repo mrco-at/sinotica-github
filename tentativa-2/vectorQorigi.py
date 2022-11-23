@@ -13,9 +13,9 @@ from metpy.units import units
 import metpy.calc as mpcalc
 import numpy as np
 import xarray as xr
-
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 #%%
-ds = xr.open_dataset("/home/inpe/Documentos/met-sinotica/atividade-metpy/15_7_22_9.nc")
+ds = xr.open_dataset("/home/tet/Documents/sinotica/atividade-metpy/sinotica-github/tentativa-2/30_06_2020.nc")
 #%%
 ds
 #%%
@@ -56,7 +56,7 @@ dx, dy = mpcalc.lat_lon_grid_deltas(lons, lats)
 uqvect, vqvect = mpcalc.q_vector(uwnd_850, vwnd_850, tmpk_1, level, dx, dy)
 
 # Compute the divergence of the Q-vectors calculated above
-q_div = -2*mpcalc.divergence(uqvect, vqvect, dx=dx, dy=dy, x_dim=-1, y_dim=-2)
+q_div = 2*mpcalc.divergence(uqvect, vqvect, dx=dx, dy=dy, x_dim=-1, y_dim=-2)
 
 
 
@@ -67,7 +67,7 @@ mapcrs = ccrs.Mercator()
 datacrs = ccrs.PlateCarree()
 
 # PLOT
-fig = plt.figure(1, figsize=(14, 12))
+fig = plt.figure(1, figsize=(16, 14))
 ax = plt.subplot(111, projection=mapcrs)
 ax.set_extent([-120, 0, 10, -60], ccrs.PlateCarree())
 
@@ -80,7 +80,9 @@ clevs_850_tmpc = np.arange(-40, 41, 2)
 clevs_qdiv = list(range(-30, -4, 5))+list(range(5, 31, 5))
 cf = ax.contourf(lons, lats, q_div*1e18, clevs_qdiv, cmap=plt.cm.bwr,
                  extend='both', transform=datacrs)
-cb = plt.colorbar(cf, orientation='horizontal', pad=0, aspect=50, extendrect=True,
+#cb = plt.colorbar(cf, orientation='horizontal', pad=0, aspect=20, extendrect=True,
+#                  ticks=clevs_qdiv)
+cb = plt.colorbar(cf, orientation='horizontal', pad=0.04, fraction=0.046,
                   ticks=clevs_qdiv)
 cb.set_label('Q-Vector Div. (*10$^{18}$ m s$^{-1}$ kg$^{-1}$)')
 
@@ -104,8 +106,7 @@ ax.quiver(lons[wind_slice[0]], lats[wind_slice[1]],
           transform=datacrs)
 
 # Add some titles
-plt.title('850-hPa GFS Geo. Heights (m), Temp (C),'
-          ' and Q-Vectors (m$^2$ kg$^{-1}$ s$^{-1}$)', loc='left')
-plt.title('Valid Time: {}'.format(vtime), loc='right')
+plt.title('850-hPa GFS Geo. Heights (m), Temp (C), and Q-Vectors (m$^2$ kg$^{-1}$ s$^{-1}$)\n', loc='left')
+plt.title('Valid Time: {}'.format(vtime), loc='left')
 
 plt.show()
