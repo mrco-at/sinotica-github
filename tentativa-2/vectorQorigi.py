@@ -107,6 +107,8 @@ ax.quiver(lons[wind_slice[0]], lats[wind_slice[1]],
 
 # Add some titles
 plt.title('850-hPa GFS Geo. Heights (m), Temp (C), and Q-Vectors (m$^2$ kg$^{-1}$ s$^{-1}$)\n', loc='left')
-plt.title('Valid Time: {}'.format(vtime), loc='left')
+plt.title('{}'.format(vtime), loc='right')
 
 plt.show()
+#%%
+plt.savefig('30-06-20-zoom.png')
