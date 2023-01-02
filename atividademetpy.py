@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Nov  7 13:46:10 2022
-
+Script desenvolvido para criação de mapa de vetor na disciplina e meteorologia sinótica em 2022 - versão compartilhada 
+por joyce COM minhas alterações
 @author: tet
 """
 

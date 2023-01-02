@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Oct 10 10:13:53 2022
-
+Script desenvolvido para criação de mapa de vetor na disciplina e meteorologia sinótica em 2022 - versão compartilhada 
+por joyce SEM minhas alterações
 @author: inpe
 """
 #%%
